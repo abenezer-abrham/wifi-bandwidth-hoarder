@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ WiFi Bandwidth Hoarder & Speed Engine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navbar -->
+        <header class="top-bar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>WiFi Bandwidth <span>Hoarder</span></h1>
+                    <p class="subtitle"><i class="fa-solid fa-shield-halved"></i> Ultra Network Throughput Accelerator & Spectrum Cockpit</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="os-pill" id="os-pill">
+                    <i class="fa-brands fa-linux"></i> <span id="os-text">Cross-Platform</span>
+                </div>
+                <div class="status-badge" id="conn-badge">
+                    <span class="status-dot pulsing" id="status-dot"></span>
+                    <span id="conn-text">Scanning Wi-Fi...</span>
+                </div>
+                <button class="btn btn-secondary" id="btn-refresh">
+                    <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-grid">
+            
+            <!-- Hero Boost Action Banner -->
+            <section class="card hero-boost-card">
+                <div class="hero-content">
+                    <div class="hero-tag"><i class="fa-solid fa-bolt-lightning"></i> MAXIMUM THROUGHPUT ENGINE</div>
+                    <h2>Hoard All Available Wi-Fi Bandwidth</h2>
+                    <p>Unlock unbuffered TCP receive windows, optimize packet queues, disable power-saving hardware throttling, eliminate background upload hogging, and prioritize your connection.</p>
+
+                    <div class="hero-actions">
+                        <button class="btn btn-hero" id="btn-hoard-boost">
+                            <span class="btn-glow"></span>
+                            <i class="fa-solid fa-rocket"></i> HOARD BANDWIDTH NOW
+                        </button>
+                        <button class="btn btn-outline" id="btn-quick-dns">
+                            <i class="fa-solid fa-globe"></i> Apply Cloudflare DNS (1.1.1.1)
+                        </button>
+                        <button class="btn btn-danger-outline" id="btn-reset-defaults">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="signal-radar">
+                        <div class="radar-circle c1"></div>
+                        <div class="radar-circle c2"></div>
+                        <div class="radar-circle c3"></div>
+                        <div class="radar-center">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                        </div>
+                    </div>
+                    <div class="signal-metrics">
+                        <div class="metric-box">
+                            <span class="m-label">SIGNAL QUALITY</span>
+                            <span class="m-value neon-green" id="val-signal-pct">-- %</span>
+                            <span class="m-sub" id="val-signal-dbm">-- dBm</span>
+                        </div>
+                        <div class="metric-box">
+                            <span class="m-label">LINK BITRATE</span>
+                            <span class="m-value neon-cyan" id="val-link-speed">-- Mbps</span>
+                            <span class="m-sub" id="val-band-sub">-- GHz</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-Time Traffic & Live Speed Test Row -->
+            <div class="two-column-grid">
+                
+                <!-- Real-Time Live Bandwidth Monitor -->
+                <section class="card traffic-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-wave-square text-cyan"></i> Live Network Throughput Meter</h3>
+                        <div class="live-pill"><span class="status-dot pulsing"></span> LIVE STREAM</div>
+                    </div>
+                    <p class="card-desc">Real-time instantaneous network traffic bandwidth on active adapter.</p>
+                    
+                    <div class="traffic-stats-row">
+                        <div class="traffic-box rx">
+                            <div class="traffic-header">
+                                <i class="fa-solid fa-arrow-down text-cyan"></i>
+                                <span>DOWNLOAD SPEED</span>
+                            </div>
+                            <div class="traffic-val" id="val-live-rx">0.00 <small>KB/s</small></div>
+                            <div class="traffic-sub" id="val-total-rx">Total RX: 0 MB</div>
+                        </div>
+
+                        <div class="traffic-box tx">
+                            <div class="traffic-header">
+                                <i class="fa-solid fa-arrow-up text-magenta"></i>
+                                <span>UPLOAD SPEED</span>
+                            </div>
+                            <div class="traffic-val" id="val-live-tx">0.00 <small>KB/s</small></div>
+                            <div class="traffic-sub" id="val-total-tx">Total TX: 0 MB</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper traffic-chart-wrapper">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Speed & Latency Test Cockpit -->
+                <section class="card speedtest-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-gauge-high text-green"></i> Live Speed & Latency Test</h3>
+                        <button class="btn-sm" id="btn-run-speedtest">
+                            <i class="fa-solid fa-play"></i> Run Speed Test
+                        </button>
+                    </div>
+                    <p class="card-desc">Accurately measure your real-world download throughput, ping latency, and jitter.</p>
+
+                    <div class="speedtest-display">
+                        <div class="speed-main-gauge">
+                            <div class="speed-circle">
+                                <span class="speed-number" id="st-download">--</span>
+                                <span class="speed-unit">Mbps</span>
+                                <span class="speed-label">DOWNLOAD</span>
+                            </div>
+                        </div>
+
+                        <div class="speed-sub-metrics">
+                            <div class="sub-metric-item">
+                                <i class="fa-solid fa-cloud-arrow-up text-magenta"></i>
+                                <div>
+                                    <span class="sm-label">UPLOAD</span>
+                                    <span class="sm-val" id="st-upload">-- Mbps</span>
+                                </div>
+                            </div>
+                            <div class="sub-metric-item">
+                                <i class="fa-solid fa-stopwatch text-cyan"></i>
+                                <div>
+                                    <span class="sm-label">PING LATENCY</span>
+                                    <span class="sm-val" id="st-ping">-- ms</span>
+                                </div>
+                            </div>
+                            <div class="sub-metric-item">
+                                <i class="fa-solid fa-shuffle text-orange"></i>
+                                <div>
+                                    <span class="sm-label">JITTER</span>
+                                    <span class="sm-val" id="st-jitter">-- ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="speedtest-status-bar" id="speedtest-status-bar">
+                        <i class="fa-solid fa-circle-info"></i> Ready to benchmark connection performance.
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Active Connection Telemetry -->
+            <div class="metrics-row">
+                <!-- SSID Card -->
+                <div class="card metric-card">
+                    <div class="card-icon cyan"><i class="fa-solid fa-wifi"></i></div>
+                    <div class="metric-details">
+                        <span class="card-title">Connected Network</span>
+                        <span class="card-val" id="val-ssid">Disconnected</span>
+                        <div class="metric-meta">
+                            <span id="val-bssid">BSSID: --</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Channel & Frequency -->
+                <div class="card metric-card">
+                    <div class="card-icon purple"><i class="fa-solid fa-tower-broadcast"></i></div>
+                    <div class="metric-details">
+                        <span class="card-title">Channel & Frequency</span>
+                        <span class="card-val" id="val-channel">Channel --</span>
+                        <div class="metric-meta">
+                            <span id="val-freq">-- MHz</span> | <span id="val-security" class="badge">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TCP Optimization Engine -->
+                <div class="card metric-card">
+                    <div class="card-icon green"><i class="fa-solid fa-microchip"></i></div>
+                    <div class="metric-details">
+                        <span class="card-title">TCP Optimization Engine</span>
+                        <span class="card-val" id="val-congestion">cubic</span>
+                        <div class="metric-meta">
+                            <span>Window Scaling: <strong id="val-scaling">1</strong></span> | <span>ECN: <strong id="val-ecn">1</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IP & Gateway Card -->
+                <div class="card metric-card">
+                    <div class="card-icon orange"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="metric-details">
+                        <span class="card-title">IP, Gateway & MTU</span>
+                        <span class="card-val" id="val-ip">127.0.0.1</span>
+                        <div class="metric-meta">
+                            <span>GW: <strong id="val-gateway">--</strong></span> | <span>MTU: <strong id="val-mtu">1500</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spectrum Visualizer & DNS Benchmark Row -->
+            <div class="two-column-grid">
+                
+                <!-- Wi-Fi Spectrum Congestion Analyzer -->
+                <section class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-chart-column text-cyan"></i> Wi-Fi Channel Congestion Spectrum</h3>
+                        <button class="btn-sm" id="btn-scan-nets"><i class="fa-solid fa-satellite-dish"></i> Scan Spectrum</button>
+                    </div>
+                    <p class="card-desc">Visualizes nearby Wi-Fi network channels on 2.4 GHz & 5 GHz. Overlapping channels cause packet collisions.</p>
+                    <div class="chart-wrapper">
+                        <canvas id="spectrumChart"></canvas>
+                    </div>
+                    <div class="channel-recommendation" id="channel-rec-box">
+                        <i class="fa-solid fa-lightbulb"></i> <span>Analyzing Wi-Fi channel density for optimal throughput recommendations...</span>
+                    </div>
+
+                    <div class="networks-mini-table">
+                        <table class="dns-table">
+                            <thead>
+                                <tr>
+                                    <th>SSID</th>
+                                    <th>Channel</th>
+                                    <th>Band</th>
+                                    <th>Signal</th>
+                                    <th>Security</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nearby-table-body">
+                                <tr><td colspan="5" class="text-center">Scanning Wi-Fi environment...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- DNS Speed Benchmark & Switcher -->
+                <section class="card dns-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-bolt text-magenta"></i> Ultra-Fast DNS Latency Benchmark</h3>
+                        <button class="btn-sm" id="btn-bench-dns"><i class="fa-solid fa-stopwatch"></i> Run Ping Test</button>
+                    </div>
+                    <p class="card-desc">Benchmark resolution response times and apply the fastest DNS to your adapter with 1 click.</p>
+                    <div class="dns-table-wrapper">
+                        <table class="dns-table">
+                            <thead>
+                                <tr>
+                                    <th>DNS Provider</th>
+                                    <th>Primary IP</th>
+                                    <th>Ping (ms)</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dns-table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center">Click "Run Ping Test" to benchmark global DNS servers...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Active Bandwidth Tweaks & Hoarder Modules -->
+            <section class="card tweaks-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-sliders text-cyan"></i> Bandwidth Hoarder System Optimizations</h3>
+                </div>
+                <div class="tweaks-grid">
+                    <div class="tweak-item active">
+                        <div class="tweak-info">
+                            <h4><i class="fa-solid fa-circle-check text-green"></i> TCP Window Buffer Auto-Tuning (16MB)</h4>
+                            <p>Enables dynamic high-bandwidth window scaling to unlock maximum transfer speeds on fiber & high-speed Wi-Fi.</p>
+                        </div>
+                        <span class="tweak-tag green">ACTIVE</span>
+                    </div>
+
+                    <div class="tweak-item active">
+                        <div class="tweak-info">
+                            <h4><i class="fa-solid fa-circle-check text-green"></i> Multi-Core RPS / RSS Packet Acceleration</h4>
+                            <p>Distributes network packet processing across all CPU cores to prevent single-core bottlenecking.</p>
+                        </div>
+                        <span class="tweak-tag green">ACTIVE</span>
+                    </div>
+
+                    <div class="tweak-item active">
+                        <div class="tweak-info">
+                            <h4><i class="fa-solid fa-circle-check text-green"></i> Wi-Fi Power Save Override (100% Throughput)</h4>
+                            <p>Prevents Wi-Fi adapter hardware from sleeping or dropping to low-power throttled states during data transfers.</p>
+                        </div>
+                        <span class="tweak-tag green">ACTIVE</span>
+                    </div>
+
+                    <div class="tweak-item active">
+                        <div class="tweak-info">
+                            <h4><i class="fa-solid fa-circle-check text-green"></i> Explicit Congestion Notification (ECN)</h4>
+                            <p>Directs routers to notify packet queue build-up before dropping packets, drastically reducing packet loss & gaming jitter.</p>
+                        </div>
+                        <span class="tweak-tag green">ACTIVE</span>
+                    </div>
+
+                    <div class="tweak-item active">
+                        <div class="tweak-info">
+                            <h4><i class="fa-solid fa-circle-check text-green"></i> Network Device Queue Backlog (10,000)</h4>
+                            <p>Increases maximum backlog packet buffer to prevent network socket drops during heavy multi-stream downloads.</p>
+                        </div>
+                        <span class="tweak-tag green">ACTIVE</span>
+                    </div>
+
+                    <div class="tweak-item active">
+                        <div class="tweak-info">
+                            <h4><i class="fa-solid fa-circle-check text-green"></i> Background P2P & Throttling Override</h4>
+                            <p>Terminates background telemetry/P2P upload hogging and disables operating system multimedia network throttling.</p>
+                        </div>
+                        <span class="tweak-tag green">ACTIVE</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Optimization Console Log Output -->
+            <section class="card console-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-terminal text-cyan"></i> Bandwidth Hoarder Execution Log</h3>
+                    <div>
+                        <button class="btn-sm text-dim" id="btn-copy-log"><i class="fa-solid fa-copy"></i> Copy</button>
+                        <button class="btn-sm text-dim" id="btn-clear-log"><i class="fa-solid fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="console-body" id="console-log">
+                    <div class="log-line info">[SYSTEM] WiFi Bandwidth Hoarder Engine initialized. Real-time telemetry active.</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <i class="toast-icon fa-solid fa-circle-check" id="toast-icon"></i>
+        <span id="toast-message">Action executed successfully!</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
